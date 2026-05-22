@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Growth Analyzer — Himanshu Patel</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --navy: #0d1b2a; --navy-mid: #1a2f45;
+    --gold: #c9a84c; --gold-light: #e8c97a;
+    --cream: #f9f5ee; --white: #ffffff;
+    --gray: #8a99aa; --text: #2c3e50;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body { font-family: 'DM Sans', sans-serif; background: var(--cream); color: var(--text); }
+
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    background: rgba(13,27,42,0.97); backdrop-filter: blur(10px);
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 0 5%; height: 68px;
+    border-bottom: 1px solid rgba(201,168,76,0.2);
+  }
+  .nav-logo { font-family: 'Playfair Display', serif; font-size: 1.3rem; color: var(--gold); font-weight: 600; text-decoration: none; }
+  .nav-back { color: rgba(255,255,255,0.7); text-decoration: none; font-size: 0.85rem; font-weight: 500; letter-spacing: 0.5px; transition: color 0.3s; }
+  .nav-back:hover { color: var(--gold); }
+
+  .project-hero {
+    min-height: 60vh; background: var(--navy);
+    display: flex; align-items: flex-end;
+    padding: 120px 8% 60px; position: relative; overflow: hidden;
+  }
+  .project-hero::before {
+    content: ''; position: absolute; inset: 0;
+    background: radial-gradient(ellipse at 70% 50%, rgba(201,168,76,0.06) 0%, transparent 60%);
+  }
+  .project-hero::after {
+    content: ''; position: absolute; bottom: 0; left: 0; width: 100%; height: 2px;
+    background: linear-gradient(90deg, transparent, var(--gold), transparent);
+  }
+  .hero-inner { max-width: 1200px; margin: 0 auto; width: 100%; position: relative; z-index: 1; }
+  .back-crumb {
+    display: inline-flex; align-items: center; gap: 0.4rem;
+    color: var(--gold); font-size: 0.8rem; text-decoration: none;
+    letter-spacing: 1px; text-transform: uppercase; font-weight: 600;
+    margin-bottom: 1.5rem; opacity: 0.8; transition: opacity 0.2s;
+  }
+  .back-crumb:hover { opacity: 1; }
+  .project-tag {
+    display: inline-block;
+    background: rgba(201,168,76,0.15); border: 1px solid rgba(201,168,76,0.3);
+    color: var(--gold); padding: 0.35rem 1rem; font-size: 0.75rem;
+    text-transform: uppercase; letter-spacing: 1.5px; font-weight: 600; margin-bottom: 1.2rem;
+  }
+  .project-hero h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(2.5rem, 5vw, 4rem);
+    color: var(--white); line-height: 1.1; font-weight: 700; margin-bottom: 1.2rem;
+  }
+  .project-hero h1 span { color: var(--gold); }
+  .project-hero .tagline {
+    color: rgba(255,255,255,0.6); font-size: 1.05rem;
+    line-height: 1.7; max-width: 680px; font-weight: 300; margin-bottom: 2rem;
+  }
+  .meta-row {
+    display: flex; flex-wrap: wrap; gap: 2rem;
+    border-top: 1px solid rgba(255,255,255,0.1); padding-top: 1.5rem;
+  }
+  .meta-item { display: flex; flex-direction: column; gap: 0.25rem; }
+  .meta-item .lbl { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 1px; color: var(--gray); font-weight: 600; }
+  .meta-item .val { font-size: 0.9rem; color: rgba(255,255,255,0.85); font-weight: 500; }
+
+  .content-wrap { max-width: 1200px; margin: 0 auto; padding: 80px 8%; }
+
+  .section-label { font-size: 0.75rem; letter-spacing: 3.5px; text-transform: uppercase; color: var(--gold); font-weight: 600; margin-bottom: 0.7rem; }
+  .section-title { font-family: 'Playfair Display', serif; font-size: clamp(1.8rem, 3vw, 2.4rem); color: var(--navy); font-weight: 700; margin-bottom: 1rem; }
+  .title-underline { width: 50px; height: 3px; background: var(--gold); margin-bottom: 2.5rem; }
+
+  .screenshots-section { margin-bottom: 80px; }
+  .screenshots-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+  .screenshot-item {
+    position: relative; overflow: hidden;
+    border: 1px solid rgba(13,27,42,0.1); cursor: zoom-in;
+    transition: transform 0.3s, box-shadow 0.3s;
+  }
+  .screenshot-item:hover { transform: translateY(-4px); box-shadow: 0 20px 50px rgba(0,0,0,0.15); }
+  .screenshot-item img { width: 100%; display: block; }
+  .screenshot-caption {
+    position: absolute; bottom: 0; left: 0; right: 0;
+    background: linear-gradient(transparent, rgba(13,27,42,0.9));
+    color: rgba(255,255,255,0.85); padding: 2rem 1.2rem 1rem;
+    font-size: 0.82rem; font-weight: 500;
+  }
+
+  .lightbox {
+    display: none; position: fixed; inset: 0; z-index: 1000;
+    background: rgba(0,0,0,0.92); align-items: center; justify-content: center; cursor: zoom-out;
+  }
+  .lightbox.open { display: flex; }
+  .lightbox img { max-width: 90vw; max-height: 90vh; object-fit: contain; }
+  .lb-close { position: fixed; top: 1.5rem; right: 2rem; color: white; font-size: 2.5rem; cursor: pointer; opacity: 0.7; transition: opacity 0.2s; }
+  .lb-close:hover { opacity: 1; }
+
+  .overview-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 60px; margin-bottom: 80px; align-items: start; }
+  .overview-text p { color: #4a5568; line-height: 1.9; font-size: 1rem; margin-bottom: 1.2rem; font-weight: 300; }
+
+  .sidebar-card { background: var(--navy); padding: 2rem; border-top: 3px solid var(--gold); }
+  .sidebar-card h3 { font-size: 0.75rem; letter-spacing: 2px; text-transform: uppercase; color: var(--gold); font-weight: 600; margin-bottom: 1.2rem; }
+  .tech-list { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 1.5rem; }
+  .tech-badge { background: rgba(201,168,76,0.12); border: 1px solid rgba(201,168,76,0.25); color: rgba(255,255,255,0.8); padding: 0.35rem 0.8rem; font-size: 0.78rem; font-weight: 500; }
+  .result-item { color: rgba(255,255,255,0.75); font-size: 0.85rem; border-left: 2px solid var(--gold); padding-left: 0.8rem; margin-bottom: 0.8rem; }
+
+  .highlights-section { margin-bottom: 80px; }
+  .highlights-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1.5rem; }
+  .highlight-card { background: var(--white); padding: 2rem; border-left: 3px solid var(--gold); transition: transform 0.3s, box-shadow 0.3s; }
+  .highlight-card:hover { transform: translateY(-4px); box-shadow: 0 12px 35px rgba(0,0,0,0.08); }
+  .highlight-icon { font-size: 1.8rem; margin-bottom: 1rem; }
+  .highlight-card h3 { font-family: 'Playfair Display', serif; font-size: 1.05rem; color: var(--navy); font-weight: 600; margin-bottom: 0.6rem; }
+  .highlight-card p { font-size: 0.88rem; color: #5a6a7a; line-height: 1.7; font-weight: 300; }
+
+  .next-project {
+    background: var(--navy-mid); padding: 3rem 8%;
+    display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1.5rem;
+  }
+  .next-project .lbl { font-size: 0.75rem; letter-spacing: 2px; text-transform: uppercase; color: var(--gray); font-weight: 600; margin-bottom: 0.4rem; }
+  .next-project h3 { font-family: 'Playfair Display', serif; color: var(--white); font-size: 1.3rem; }
+  .btn-gold { background: var(--gold); color: var(--navy); padding: 0.85rem 2rem; text-decoration: none; font-weight: 600; font-size: 0.88rem; letter-spacing: 0.5px; transition: all 0.3s; }
+  .btn-gold:hover { background: var(--gold-light); transform: translateY(-2px); }
+
+  footer { background: #060e17; color: rgba(255,255,255,0.4); text-align: center; padding: 2rem; font-size: 0.82rem; border-top: 1px solid rgba(201,168,76,0.1); }
+  footer span { color: var(--gold); }
+  .footer-nav { display: flex; justify-content: center; gap: 2rem; margin-bottom: 1rem; flex-wrap: wrap; }
+  .footer-nav a { color: rgba(255,255,255,0.5); text-decoration: none; font-size: 0.82rem; transition: color 0.2s; }
+  .footer-nav a:hover { color: var(--gold); }
+
+  @media (max-width: 768px) {
+    .screenshots-grid { grid-template-columns: 1fr; }
+    .overview-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="../index.html" class="nav-logo">Himanshu Patel</a>
+  <a href="../index.html#projects" class="nav-back">← Back to Portfolio</a>
+</nav>
+
+<div class="project-hero">
+  <div class="hero-inner">
+    <a href="../index.html#projects" class="back-crumb">← All Projects</a>
+    <div class="project-tag">Full-Stack · AI · Web App</div>
+    <h1><span>Elevora</span></h1>
+    <p class="tagline">An AI-powered career development platform that analyzes growth trajectories, skill patterns, and job opportunities — featuring a live dashboard, GitHub-like code workspace, and intelligent career insights.</p>
+    <div class="meta-row">
+      <div class="meta-item"><span class="lbl">Role</span><span class="val">Full-Stack Developer</span></div>
+      <div class="meta-item"><span class="lbl">Type</span><span class="val">Personal Project</span></div>
+      <div class="meta-item"><span class="lbl">Stack</span><span class="val">Next.js · MongoDB · Gemini AI</span></div>
+      <div class="meta-item"><span class="lbl">Year</span><span class="val">2026</span></div>
+    </div>
+  </div>
+</div>
+
+<div class="content-wrap">
+
+  <div class="screenshots-section">
+    <div class="section-label">Screens</div>
+    <div class="section-title">Project Walkthrough</div>
+    <div class="title-underline"></div>
+    <div class="screenshots-grid">
+      <div class="screenshot-item" onclick="openLightbox(this)">
+        <img src="../assets/growth-analyzer-0.png" alt="Landing Page">
+        <div class="screenshot-caption">Landing Page — AI-powered self-analysis with live growth map preview</div>
+      </div>
+      <div class="screenshot-item" onclick="openLightbox(this)">
+        <img src="../assets/growth-analyzer-1.png" alt="Dashboard">
+        <div class="screenshot-caption">AI Growth Dashboard — Total entries, average rating & active phases</div>
+      </div>
+      <div class="screenshot-item" onclick="openLightbox(this)">
+        <img src="../assets/growth-analyzer-2.png" alt="Job Portal">
+        <div class="screenshot-caption">Job Portal — Gemini-powered live role matching & ranked opportunities</div>
+      </div>
+      <div class="screenshot-item" onclick="openLightbox(this)">
+        <img src="../assets/growth-analyzer-3.png" alt="Growth Timeline">
+        <div class="screenshot-caption">Growth Timeline — Filter achievements by category, phase, and date</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="overview-grid">
+    <div class="overview-text">
+      <div class="section-label">Overview</div>
+      <div class="section-title">What I Built</div>
+      <div class="title-underline"></div>
+      <p>Growth Analyzer is a full-stack AI web application built to solve a real challenge: tracking skill development, career progress, and self-reflection in one intelligent platform. Inspired by GitHub's approach to tracking contributions, I applied the same philosophy to personal growth.</p>
+      <p>The platform features a personalized dashboard that surfaces patterns across a user's skills, projects, and reflections. Every entry is categorized by phase (School, College, Career) and scored, allowing the AI to surface growth trends and give actionable career analysis.</p>
+      <p>The Gemini-powered Job Portal takes a user's growth profile and matches it against live job listings from LinkedIn, Naukri, and Indeed — ranked by relevance with next-step guidance. This bridges self-awareness with real-world opportunity.</p>
+      <p>The interactive Growth Timeline lets users log achievements, tag skills, and filter entries — with an AI Career Analysis button that generates structured insights. Built with Next.js 16, TypeScript, MongoDB, and Recharts for visualization.</p>
+    </div>
+    <div>
+      <div class="sidebar-card">
+        <h3>Tech Stack</h3>
+        <div class="tech-list">
+          <span class="tech-badge">Next.js</span>
+          <span class="tech-badge">TypeScript</span>
+          <span class="tech-badge">MongoDB</span>
+          <span class="tech-badge">Tailwind CSS</span>
+          <span class="tech-badge">Recharts</span>
+          <span class="tech-badge">NextAuth</span>
+          <span class="tech-badge">Node.js</span>
+          <span class="tech-badge">AI/LLM</span>
+        </div>
+        <h3 style="margin-top:1.5rem">Key Results</h3>
+        <div style="margin-top:0.5rem">
+          <div class="result-item">AI-generated insights from growth activity</div>
+          <div class="result-item">Live job search with ATS resume review</div>
+          <div class="result-item">Premium dark UI with auto-save profile</div>
+          <div class="result-item">Phase-based growth tracking &amp; reflections</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="highlights-section">
+    <div class="section-label">Features</div>
+    <div class="section-title">Key Highlights</div>
+    <div class="title-underline"></div>
+    <div class="highlights-grid">
+      <div class="highlight-card">
+        <div class="highlight-icon">&#129504;</div>
+        <h3>AI Career Analysis</h3>
+        <p>Leverages Gemini AI to analyze the growth timeline and generate structured career insights, pattern recognition, and next-step recommendations.</p>
+      </div>
+      <div class="highlight-card">
+        <div class="highlight-icon">&#128188;</div>
+        <h3>Gemini Job Portal</h3>
+        <p>Turns the growth profile into ranked job matches from LinkedIn, Naukri, and Indeed — filtered by role, location, salary, and experience.</p>
+      </div>
+      <div class="highlight-card">
+        <div class="highlight-icon">&#128202;</div>
+        <h3>Interactive Dashboards</h3>
+        <p>Real-time Recharts visualizations showing category distribution, phase breakdown, average ratings, and growth momentum indicators.</p>
+      </div>
+      <div class="highlight-card">
+        <div class="highlight-icon">&#128196;</div>
+        <h3>ATS Resume Review</h3>
+        <p>Upload your CV to get keyword coverage analysis and suggested roles &mdash; bridging growth tracking directly with career applications.</p>
+      </div>
+      <div class="highlight-card">
+        <div class="highlight-icon">&#128221;</div>
+        <h3>ATS Resume Scoring</h3>
+        <p>Automated resume scoring against job descriptions to optimize resumes for Applicant Tracking Systems before applying.</p>
+      </div>
+      <div class="highlight-card">
+        <div class="highlight-icon">&#128274;</div>
+        <h3>Secure & Persistent</h3>
+        <p>MongoDB-backed persistence with secure file handling, base64 encoding for code storage, and user authentication via NextAuth.</p>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<div id="lightbox" class="lightbox" onclick="closeLightbox()">
+  <span class="lb-close" onclick="closeLightbox()">&#215;</span>
+  <img id="lb-img" src="" alt="">
+</div>
+
+<div class="next-project">
+  <div>
+    <div class="lbl">Explore another project</div>
+    <h3>Finance Dashboard</h3>
+  </div>
+  <a href="finance-dashboard.html" class="btn-gold">View Project &#8594;</a>
+</div>
+
+<footer>
+  <div class="footer-nav">
+    <a href="../index.html#about">About</a>
+    <a href="../index.html#skills">Skills</a>
+    <a href="../index.html#projects">Projects</a>
+    <a href="../index.html#experience">Experience</a>
+    <a href="../index.html#contact">Contact</a>
+  </div>
+  <p>&#169; 2026 <span>Himanshu Patel</span> &middot; Data &amp; Business Analyst</p>
+</footer>
+
+<script>
+function openLightbox(el) {
+  document.getElementById('lb-img').src = el.querySelector('img').src;
+  document.getElementById('lightbox').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closeLightbox() {
+  document.getElementById('lightbox').classList.remove('open');
+  document.body.style.overflow = '';
+}
+document.addEventListener('keydown', function(e) { if (e.key === 'Escape') closeLightbox(); });
+</script>
+</body>
+</html>

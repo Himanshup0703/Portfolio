@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Growth OS — Himanshu Patel</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --navy: #0d1b2a; --navy-mid: #1a2f45;
+    --gold: #c9a84c; --gold-light: #e8c97a;
+    --cream: #f9f5ee; --white: #ffffff;
+    --gray: #8a99aa; --text: #2c3e50;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body { font-family: 'DM Sans', sans-serif; background: var(--cream); color: var(--text); }
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    background: rgba(13,27,42,0.97); backdrop-filter: blur(10px);
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 0 5%; height: 68px;
+    border-bottom: 1px solid rgba(201,168,76,0.2);
+  }
+  .nav-logo { font-family: 'Playfair Display', serif; font-size: 1.3rem; color: var(--gold); font-weight: 600; text-decoration: none; }
+  .nav-back { color: rgba(255,255,255,0.7); text-decoration: none; font-size: 0.85rem; font-weight: 500; letter-spacing: 0.5px; transition: color 0.3s; }
+  .nav-back:hover { color: var(--gold); }
+  .project-hero {
+    min-height: 60vh; background: var(--navy);
+    display: flex; align-items: flex-end;
+    padding: 120px 8% 60px; position: relative; overflow: hidden;
+  }
+  .project-hero::before {
+    content: ''; position: absolute; inset: 0;
+    background: radial-gradient(ellipse at 70% 50%, rgba(201,168,76,0.06) 0%, transparent 60%);
+  }
+  .project-hero::after {
+    content: ''; position: absolute; bottom: 0; left: 0; width: 100%; height: 2px;
+    background: linear-gradient(90deg, transparent, var(--gold), transparent);
+  }
+  .hero-inner { max-width: 1200px; margin: 0 auto; width: 100%; position: relative; z-index: 1; }
+  .back-crumb {
+    display: inline-flex; align-items: center; gap: 0.4rem;
+    color: var(--gold); font-size: 0.8rem; text-decoration: none;
+    letter-spacing: 1px; text-transform: uppercase; font-weight: 600;
+    margin-bottom: 1.5rem; opacity: 0.8; transition: opacity 0.2s;
+  }
+  .back-crumb:hover { opacity: 1; }
+  .project-tag {
+    display: inline-block;
+    background: rgba(201,168,76,0.15); border: 1px solid rgba(201,168,76,0.3);
+    color: var(--gold); padding: 0.35rem 1rem; font-size: 0.75rem;
+    text-transform: uppercase; letter-spacing: 1.5px; font-weight: 600; margin-bottom: 1.2rem;
+  }
+  .project-hero h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(2.5rem, 5vw, 4rem);
+    color: var(--white); line-height: 1.1; font-weight: 700; margin-bottom: 1.2rem;
+  }
+  .project-hero h1 span { color: var(--gold); }
+  .project-hero .tagline {
+    color: rgba(255,255,255,0.6); font-size: 1.05rem;
+    line-height: 1.7; max-width: 680px; font-weight: 300; margin-bottom: 2rem;
+  }
+  .meta-row {
+    display: flex; flex-wrap: wrap; gap: 2rem;
+    border-top: 1px solid rgba(255,255,255,0.1); padding-top: 1.5rem;
+  }
+  .meta-item { display: flex; flex-direction: column; gap: 0.25rem; }
+  .meta-item .lbl { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 1px; color: var(--gray); font-weight: 600; }
+  .meta-item .val { font-size: 0.9rem; color: rgba(255,255,255,0.85); font-weight: 500; }
+  .content-wrap { max-width: 1200px; margin: 0 auto; padding: 80px 8%; }
+  .section-label { font-size: 0.75rem; letter-spacing: 3.5px; text-transform: uppercase; color: var(--gold); font-weight: 600; margin-bottom: 0.7rem; }
+  .section-title { font-family: 'Playfair Display', serif; font-size: clamp(1.8rem, 3vw, 2.4rem); color: var(--navy); font-weight: 700; margin-bottom: 1rem; }
+  .title-underline { width: 50px; height: 3px; background: var(--gold); margin-bottom: 2.5rem; }
+  .screenshots-section { margin-bottom: 80px; }
+  .screenshots-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+  .screenshot-item {
+    position: relative; overflow: hidden;
+    border: 1px solid rgba(13,27,42,0.1); cursor: zoom-in;
+    transition: transform 0.3s, box-shadow 0.3s;
+  }
+  .screenshot-item:hover { transform: translateY(-4px); box-shadow: 0 20px 50px rgba(0,0,0,0.15); }
+  .screenshot-item img { width: 100%; display: block; }
+  .screenshot-caption {
+    position: absolute; bottom: 0; left: 0; right: 0;
+    background: linear-gradient(transparent, rgba(13,27,42,0.9));
+    color: rgba(255,255,255,0.85); padding: 2rem 1.2rem 1rem;
+    font-size: 0.82rem; font-weight: 500;
+  }
+  .lightbox {
+    display: none; position: fixed; inset: 0; z-index: 1000;
+    background: rgba(0,0,0,0.92); align-items: center; justify-content: center; cursor: zoom-out;
+  }
+  .lightbox.open { display: flex; }
+  .lightbox img { max-width: 90vw; max-height: 90vh; object-fit: contain; }
+  .lb-close { position: fixed; top: 1.5rem; right: 2rem; color: white; font-size: 2.5rem; cursor: pointer; opacity: 0.7; transition: opacity 0.2s; }
+  .lb-close:hover { opacity: 1; }
+  .overview-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 60px; margin-bottom: 80px; align-items: start; }
+  .overview-text p { color: #4a5568; line-height: 1.9; font-size: 1rem; margin-bottom: 1.2rem; font-weight: 300; }
+  .sidebar-card { background: var(--navy); padding: 2rem; border-top: 3px solid var(--gold); margin-bottom: 1.5rem; }
+  .sidebar-card h3 { font-size: 0.75rem; letter-spacing: 2px; text-transform: uppercase; color: var(--gold); font-weight: 600; margin-bottom: 1.2rem; }
+  .tech-list { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+  .tech-badge { background: rgba(201,168,76,0.12); border: 1px solid rgba(201,168,76,0.25); color: rgba(255,255,255,0.8); padding: 0.35rem 0.8rem; font-size: 0.78rem; font-weight: 500; }
+  .result-item { color: rgba(255,255,255,0.75); font-size: 0.85rem; border-left: 2px solid var(--gold); padding-left: 0.8rem; margin-bottom: 0.8rem; }
+  .highlights-section { margin-bottom: 80px; }
+  .highlights-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1.5rem; }
+  .highlight-card { background: var(--white); padding: 2rem; border-left: 3px solid var(--gold); transition: transform 0.3s, box-shadow 0.3s; }
+  .highlight-card:hover { transform: translateY(-4px); box-shadow: 0 12px 35px rgba(0,0,0,0.08); }
+  .highlight-icon { font-size: 1.8rem; margin-bottom: 1rem; }
+  .highlight-card h3 { font-family: 'Playfair Display', serif; font-size: 1.05rem; color: var(--navy); font-weight: 600; margin-bottom: 0.6rem; }
+  .highlight-card p { font-size: 0.88rem; color: #5a6a7a; line-height: 1.7; font-weight: 300; }
+  .domains-section { margin-bottom: 80px; }
+  .domains-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 0.8rem; }
+  .domain-chip {
+    background: var(--white); border: 1px solid rgba(13,27,42,0.1);
+    padding: 0.6rem 1rem; font-size: 0.82rem; font-weight: 500;
+    color: var(--text); transition: all 0.2s;
+    border-left: 3px solid var(--gold);
+  }
+  .domain-chip:hover { background: var(--navy); color: var(--white); }
+  .next-project {
+    background: var(--navy-mid); padding: 3rem 8%;
+    display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1.5rem;
+  }
+  .next-project .lbl { font-size: 0.75rem; letter-spacing: 2px; text-transform: uppercase; color: var(--gray); font-weight: 600; margin-bottom: 0.4rem; }
+  .next-project h3 { font-family: 'Playfair Display', serif; color: var(--white); font-size: 1.3rem; }
+  .btn-gold { background: var(--gold); color: var(--navy); padding: 0.85rem 2rem; text-decoration: none; font-weight: 600; font-size: 0.88rem; letter-spacing: 0.5px; transition: all 0.3s; }
+  .btn-gold:hover { background: var(--gold-light); transform: translateY(-2px); }
+  footer { background: #060e17; color: rgba(255,255,255,0.4); text-align: center; padding: 2rem; font-size: 0.82rem; border-top: 1px solid rgba(201,168,76,0.1); }
+  footer span { color: var(--gold); }
+  .footer-nav { display: flex; justify-content: center; gap: 2rem; margin-bottom: 1rem; flex-wrap: wrap; }
+  .footer-nav a { color: rgba(255,255,255,0.5); text-decoration: none; font-size: 0.82rem; transition: color 0.2s; }
+  .footer-nav a:hover { color: var(--gold); }
+  @media (max-width: 768px) {
+    .screenshots-grid { grid-template-columns: 1fr; }
+    .overview-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="../index.html" class="nav-logo">Himanshu Patel</a>
+  <a href="../index.html#projects" class="nav-back">&#8592; Back to Portfolio</a>
+</nav>
+
+<div class="project-hero">
+  <div class="hero-inner">
+    <a href="../index.html#projects" class="back-crumb">&#8592; All Projects</a>
+    <div class="project-tag">Full-Stack &middot; AI &middot; SaaS &middot; Mobile</div>
+    <h1><span>Growth OS</span></h1>
+    <p class="tagline">A full-stack AI-powered personal growth operating system — one workspace to plan learning, ask for help, track progress, and turn effort into visible proof. Built with Next.js, Firebase, Gemini AI, and Capacitor for cross-platform mobile.</p>
+    <div class="meta-row">
+      <div class="meta-item"><span class="lbl">Role</span><span class="val">Full-Stack Developer</span></div>
+      <div class="meta-item"><span class="lbl">Type</span><span class="val">Personal Project</span></div>
+      <div class="meta-item"><span class="lbl">Stack</span><span class="val">Next.js &middot; Firebase &middot; Gemini AI</span></div>
+      <div class="meta-item"><span class="lbl">Platform</span><span class="val">Web + Android + iOS</span></div>
+      <div class="meta-item"><span class="lbl">Year</span><span class="val">2026</span></div>
+    </div>
+  </div>
+</div>
+
+<div class="content-wrap">
+
+  <div class="screenshots-section">
+    <div class="section-label">Screens</div>
+    <div class="section-title">Project Walkthrough</div>
+    <div class="title-underline"></div>
+    <div class="screenshots-grid">
+      <div class="screenshot-item" onclick="openLightbox(this)">
+        <img src="../assets/growth-os-0.png" alt="Growth OS Landing">
+        <div class="screenshot-caption">Landing Page &mdash; Progress Pulse with consistency, productivity &amp; streak metrics</div>
+      </div>
+      <div class="screenshot-item" onclick="openLightbox(this)">
+        <img src="../assets/growth-os-1.png" alt="Growth OS Dashboard">
+        <div class="screenshot-caption">Dashboard Overview &mdash; Active roadmaps, streak, level, assets &amp; roadmap health</div>
+      </div>
+      <div class="screenshot-item" onclick="openLightbox(this)">
+        <img src="../assets/growth-os-2.png" alt="Resource Intelligence">
+        <div class="screenshot-caption">Resource Intelligence &mdash; Curated learning stack &amp; direction snapshot</div>
+      </div>
+      <div class="screenshot-item" onclick="openLightbox(this)">
+        <img src="../assets/growth-os-3.png" alt="Portfolio Vault & Rewards">
+        <div class="screenshot-caption">Portfolio Vault &amp; Rewards &mdash; Work evidence, reminders, streaks &amp; badges</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="overview-grid">
+    <div class="overview-text">
+      <div class="section-label">Overview</div>
+      <div class="section-title">What I Built</div>
+      <div class="title-underline"></div>
+      <p>Growth OS is a complete personal growth operating system — built to solve the core problem that learners face: scattered tools. Most people use five or six apps for planning, resources, AI help, notes, and tracking. Growth OS consolidates all of that into one authenticated workspace.</p>
+      <p>At its core is an Adaptive Roadmap Engine that takes a user's goal, domain, available hours per day, and target date — then generates a multi-phase roadmap with milestones, checkpoints, and AI-guided intensity levels. The Planner module converts each roadmap into day-by-day execution maps with task types (Learn, Practice, Revise, Build, Reflect), curated resource links, and milestone checkpoints.</p>
+      <p>The AI Mentor runs on a dual-model architecture: Gemini 2.5 Flash as primary with OpenAI GPT-4.1 Mini as fallback. It supports four specialized modes — Study Help, Career Advice, Project Review, and Exam Strategy — and maintains persistent conversation threads per user in Firestore, so no context is ever lost.</p>
+      <p>The Portfolio Vault stores projects, certificates, notes, GitHub links, and uploaded files against Firebase Storage. Analytics track consistency trends, productivity output, streak cycles, weak areas, and roadmap health signals. The entire platform is also packaged as a native Android and iOS app via Capacitor.</p>
+    </div>
+    <div>
+      <div class="sidebar-card">
+        <h3>Frontend</h3>
+        <div class="tech-list">
+          <span class="tech-badge">Next.js 15</span>
+          <span class="tech-badge">React 19</span>
+          <span class="tech-badge">TypeScript</span>
+          <span class="tech-badge">Tailwind CSS</span>
+        </div>
+      </div>
+      <div class="sidebar-card">
+        <h3>Backend &amp; AI</h3>
+        <div class="tech-list">
+          <span class="tech-badge">Firebase Auth</span>
+          <span class="tech-badge">Cloud Firestore</span>
+          <span class="tech-badge">Firebase Storage</span>
+          <span class="tech-badge">Gemini 2.5 Flash</span>
+          <span class="tech-badge">OpenAI GPT-4.1</span>
+        </div>
+      </div>
+      <div class="sidebar-card">
+        <h3>Mobile &amp; Deploy</h3>
+        <div class="tech-list">
+          <span class="tech-badge">Capacitor</span>
+          <span class="tech-badge">Android</span>
+          <span class="tech-badge">iOS</span>
+          <span class="tech-badge">Vercel</span>
+        </div>
+      </div>
+      <div class="sidebar-card">
+        <h3>Key Stats</h3>
+        <div style="margin-top:0.5rem">
+          <div class="result-item">18+ supported learning domains</div>
+          <div class="result-item">52KB+ hand-crafted domain data engine</div>
+          <div class="result-item">1100+ line dashboard component</div>
+          <div class="result-item">Dual AI with graceful fallback</div>
+          <div class="result-item">Persistent chat threads per user</div>
+          <div class="result-item">Cross-platform: Web + Android + iOS</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="highlights-section">
+    <div class="section-label">Features</div>
+    <div class="section-title">Key Highlights</div>
+    <div class="title-underline"></div>
+    <div class="highlights-grid">
+      <div class="highlight-card">
+        <div class="highlight-icon">&#128507;</div>
+        <h3>Adaptive Roadmap Engine</h3>
+        <p>Users set a goal, domain, hours per day, and target date. The system generates multi-phase roadmaps with milestones, dynamic intensity levels, and AI-guided checkpoints.</p>
+      </div>
+      <div class="highlight-card">
+        <div class="highlight-icon">&#128197;</div>
+        <h3>Planner &amp; Weekly Pages</h3>
+        <p>Converts roadmaps into day-by-day execution schedules with task types (Learn, Practice, Revise, Build, Reflect), curated resource links, and milestone checkpoints.</p>
+      </div>
+      <div class="highlight-card">
+        <div class="highlight-icon">&#129302;</div>
+        <h3>Dual AI Mentor</h3>
+        <p>Gemini 2.5 Flash as primary with OpenAI GPT-4.1 Mini as fallback. Four specialized modes with persistent conversation threads stored per-user in Firestore.</p>
+      </div>
+      <div class="highlight-card">
+        <div class="highlight-icon">&#128218;</div>
+        <h3>Resource Intelligence</h3>
+        <p>AI-ranked curated resources (YouTube, courses, PDFs, practice sets) organized by domain — with career direction snapshots and next proof-of-work suggestions.</p>
+      </div>
+      <div class="highlight-card">
+        <div class="highlight-icon">&#127881;</div>
+        <h3>Portfolio Vault</h3>
+        <p>Store projects, certificates, notes, and GitHub links with file upload to Firebase Storage. Every asset is linked to the goal that generated it.</p>
+      </div>
+      <div class="highlight-card">
+        <div class="highlight-icon">&#128200;</div>
+        <h3>Analytics &amp; Gamification</h3>
+        <p>Consistency trends, productivity charts, streak cycles, weak area detection, roadmap health signals, achievement badges, and a level progression system.</p>
+      </div>
+      <div class="highlight-card">
+        <div class="highlight-icon">&#128241;</div>
+        <h3>Cross-Platform Mobile</h3>
+        <p>Capacitor-based native packaging for Android and iOS — wrapping the deployed web app in a native shell with dynamic environment URL injection.</p>
+      </div>
+      <div class="highlight-card">
+        <div class="highlight-icon">&#128274;</div>
+        <h3>Production-Grade Architecture</h3>
+        <p>End-to-end TypeScript, Firestore transactions for concurrent safety, React 19 with useTransition and useDeferredValue, and centralized error handling with optimistic UI.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="domains-section">
+    <div class="section-label">Coverage</div>
+    <div class="section-title">18+ Supported Domains</div>
+    <div class="title-underline"></div>
+    <div class="domains-grid">
+      <div class="domain-chip">&#128187; Software Engineering</div>
+      <div class="domain-chip">&#129504; AI &amp; Machine Learning</div>
+      <div class="domain-chip">&#128202; Data Science</div>
+      <div class="domain-chip">&#9729; Cloud Computing</div>
+      <div class="domain-chip">&#128272; Cyber Security</div>
+      <div class="domain-chip">&#128268; Internet of Things</div>
+      <div class="domain-chip">&#128176; Chartered Accountancy</div>
+      <div class="domain-chip">&#128203; Company Secretary</div>
+      <div class="domain-chip">&#128181; Accounting</div>
+      <div class="domain-chip">&#127979; Teaching</div>
+      <div class="domain-chip">&#127979; Government Exams</div>
+      <div class="domain-chip">&#127760; Digital Marketing</div>
+      <div class="domain-chip">&#127912; Design</div>
+      <div class="domain-chip">&#128188; Business</div>
+      <div class="domain-chip">&#127916; Video Editing</div>
+      <div class="domain-chip">&#128221; Content Creation</div>
+      <div class="domain-chip">&#128165; Data Security</div>
+      <div class="domain-chip">&#128100; Freelancing</div>
+    </div>
+  </div>
+
+</div>
+
+<div id="lightbox" class="lightbox" onclick="closeLightbox()">
+  <span class="lb-close" onclick="closeLightbox()">&#215;</span>
+  <img id="lb-img" src="" alt="">
+</div>
+
+<div class="next-project">
+  <div>
+    <div class="lbl">Explore another project</div>
+    <h3>Finance Dashboard</h3>
+  </div>
+  <a href="finance-dashboard.html" class="btn-gold">View Project &#8594;</a>
+</div>
+
+<footer>
+  <div class="footer-nav">
+    <a href="../index.html#about">About</a>
+    <a href="../index.html#skills">Skills</a>
+    <a href="../index.html#projects">Projects</a>
+    <a href="../index.html#experience">Experience</a>
+    <a href="../index.html#contact">Contact</a>
+  </div>
+  <p>&#169; 2026 <span>Himanshu Patel</span> &middot; Data &amp; Business Analyst</p>
+</footer>
+
+<script>
+function openLightbox(el) {
+  document.getElementById('lb-img').src = el.querySelector('img').src;
+  document.getElementById('lightbox').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closeLightbox() {
+  document.getElementById('lightbox').classList.remove('open');
+  document.body.style.overflow = '';
+}
+document.addEventListener('keydown', function(e) { if (e.key === 'Escape') closeLightbox(); });
+</script>
+</body>
+</html>
